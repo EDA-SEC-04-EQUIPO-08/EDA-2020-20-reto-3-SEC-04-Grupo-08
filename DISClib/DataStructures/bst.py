@@ -179,7 +179,7 @@ def keySet(bst):
     """
     try:
         klist = lt.newList()
-        klist = keySetTree(bst, klist)
+        klist = keySetTree(bst['root'], klist)
         return klist
     except Exception as exp:
         error.reraise(exp, 'BST:KeySet')
@@ -197,7 +197,7 @@ def valueSet(bst):
     """
     try:
         vlist = lt.newList()
-        vlist = valueSetTree(bst, vlist)
+        vlist = valueSetTree(bst['root'], vlist)
         return vlist
     except Exception as exp:
         error.reraise(exp, 'BST:valueSet')
