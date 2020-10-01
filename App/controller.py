@@ -37,14 +37,12 @@ recae sobre el controlador.
 #  Inicializacion del catalogo
 # ___________________________________________________
 
-
 def init():
     """
     Llama la funcion de inicializacion del modelo.
     """
-
-    return None
-
+    analizer = model.newAnalyzer()
+    return analizer
 
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
@@ -55,9 +53,65 @@ def loadData(analyzer, accidentsfile):
     """
     Carga los datos de los archivos CSV en el modelo
     """
-    
+    accidentsfile = cf.data_dir + accidentsfile
+    input_file = csv.DictReader(open(accidentsfile, encoding="utf-8"),
+                                delimiter=",")
+    for accident in input_file:
+        model.addAccident(analyzer, accident)
     return analyzer
 
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
+def getAccidentsByDate(analyzer, initialDate):
+    """
+    Retorna los accidentes por fecha y su severidad
+    """
+    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
+    dataentry = model.getAccidentsByDate(analyzer, initialDate.date())
+    num_accidents = dataentry["num_accidents"]
+    severities = dataentry['severityIndex']
+    sev1 = model.accidentsSize(model.getSeverity(severities,1))
+    sev2 = model.accidentsSize(model.getSeverity(severities,2))
+    sev3 = model.accidentsSize(model.getSeverity(severities,3))
+    sev4 = model.accidentsSize(model.getSeverity(severities,4))  
+    return(num_accidents,sev1,sev2,sev3,sev4)
+
+def totalAccidentSize(analyzer):
+    """
+    Numero de accidentes
+    """
+    return model.accidentsSize(analyzer['accidents'])
+
+def accidentSize(lst):
+    """
+    Numero de accidentes
+    """
+    return model.accidentsSize(lst)
+
+def indexHeight(analyzer):
+    """
+    Altura del indice (arbol)
+    """
+    return model.indexHeight(analyzer)
+
+
+def indexSize(analyzer):
+    """
+    Numero de nodos en el arbol
+    """
+    return model.indexSize(analyzer)
+
+
+def minKey(analyzer):
+    """
+    La menor llave del arbol
+    """
+    return model.minKey(analyzer)
+
+
+def maxKey(analyzer):
+    """
+    La mayor llave del arbol
+    """
+    return model.maxKey(analyzer)

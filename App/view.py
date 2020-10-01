@@ -37,13 +37,12 @@ operación seleccionada.
 #  Ruta a los archivos
 # ___________________________________________________
 
-
-crimefile = 'crime-utf8.csv'
+accidents_small = 'us_accidents_small.csv'
+accidents_2016 = 'us_accidents_dis_2016.csv'
 
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
-
 
 def printMenu():
     print("\n")
@@ -51,11 +50,9 @@ def printMenu():
     print("Bienvenido")
     print("1- Inicializar Analizador")
     print("2- Cargar información de accidentes")
-    print("3- Requerimento 1")
-    print("4- Requerimento 2")
+    print("3-  Conocer los accidentes en una fecha")
     print("0- Salir")
     print("*******************************************")
-
 
 """
 Menu principal
@@ -68,16 +65,23 @@ while True:
         print("\nInicializando....")
         # cont es el controlador que se usará de acá en adelante
         cont = controller.init()
+        print("Se creo el analizador con exito")
 
     elif int(inputs[0]) == 2:
-        print("\nCargando información de crimenes ....")
+        print("\nCargando información de accidentes ....")
+        controller.loadData(cont, accidents_small)
+        print('Accidentes cargados: ' + str(controller.totalAccidentSize(cont)))
+        print('Altura del arbol: ' + str(controller.indexHeight(cont)))
+        print('Cantidad de fechas: ' + str(controller.indexSize(cont)))
+        print('Primera fecha registrada: ' + str(controller.minKey(cont)))
+        print('Ultima fecha registrada: ' + str(controller.maxKey(cont)))
 
     elif int(inputs[0]) == 3:
-        print("\nBuscando crimenes en un rango de fechas: ")
-
-
-    elif int(inputs[0]) == 4:
-        print("\nRequerimiento No 1 del reto 3: ")
+        print("\nBuscando accidentes en una fecha: ")
+        initialDate = input("Fecha (YYYY-MM-DD): ")
+        num_accidents,sev1,sev2,sev3,sev4 = controller.getAccidentsByDate(cont, initialDate)
+        print("\nEl total de accidentes en la fecha " + initialDate + " son:  " + str(num_accidents))
+        print("\nHubo " + str(sev1) + " accidentes con severidad 1,  "+ str(sev2) + " con severidad 2,  "+ str(sev3) + " con severidad 3 y  "+ str(sev4) + " con severidad 4." )
 
     else:
         sys.exit(0)
