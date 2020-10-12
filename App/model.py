@@ -157,16 +157,5 @@ def compare(elemnt1, elemnt2):
     else:
         return -1
 
-def compareKeyEntry(key, entry):
-    """
-    Compara dos llaves, el priemr argumento es
-    una llave y el segundo es el nodo de la llave
-    """
-    key2 = me.getKey(entry)
-    if (key == key2):
-        return 0
-    elif (key > key2):
-        return 1
-    else:
-        return -1
+
 
