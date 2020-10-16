@@ -99,6 +99,19 @@ while True:
             print("\nHubo " + str(sev1) + " accidentes con severidad 1,  "+ str(sev2) + " con severidad 2,  "+ str(sev3) + " con severidad 3 y  "+ str(sev4) + " con severidad 4." )
         except:
             print("Hubo un error al buscar la fecha ingresada")
+
+    elif int(inputs[0]) == 5:
+        print("\nBuscando los accidentes en un rango de fechas: ")
+        print("\nIngresar las fechas del rango en formato YYYY-MM-DD")
+        initialDate = input("Fecha inicial: ")
+        finalDate = input("Fecha final: ")
+        try:
+            num_accidents,mayor = controller.getAccidentsByDateRange(cont, initialDate, finalDate)
+            num_sev,sev = mayor
+            print("\nEl total de accidentes entre " + initialDate + " y " + finalDate + " son:  " + str(num_accidents))
+            print("\nLa severidad más reportada fue la "+ sev + ", esta fue reportada un total de "+ str(num_sev) + " en el rango de fechas" )
+        except:
+            print("Hubo un error al buscar el rango de fechas ingresado")
     
     elif int(inputs[0]) == 7:
         print("\nBuscando accidentes por rango de horas: ")
@@ -113,8 +126,6 @@ while True:
             print("\nY sus porcentajes son " + str(per_1) + ",  "+ str(per_2) + ",  "+ str(per_3) + " y  "+ str(per_4) + " respectivamente." )
         except:
             print("Hubo un error al buscar el rango de horas ingresado")
-
-
     else:
         sys.exit(0)
 sys.exit(0)

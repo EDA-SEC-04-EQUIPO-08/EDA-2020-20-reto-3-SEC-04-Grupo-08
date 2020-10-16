@@ -75,6 +75,18 @@ def getAccidentsByDate(analyzer, initialDate):
     sev1,sev2,sev3,sev4 = getSeverities(severities)
     return(num_accidents,sev1,sev2,sev3,sev4)
 
+def getAccidentsByDateRange(analyzer, initialDate, finalDate):
+    """
+    Retorna los accidentes por fecha y su severidad
+    más reportada
+    """
+    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
+    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
+    dataentry = model.getAccidentsByDateRange(analyzer, initialDate.date(), finalDate.date())
+    num_accidents,sev1,sev2,sev3,sev4 = getTotalInfo(dataentry)
+    mayor = (max((sev1,"severidad 1"),(sev2,"severidad 2"),(sev3,"severidad 3"),(sev4,"severidad 4")))
+    return(num_accidents,mayor)
+
 def getAccidentsByHourRange(analyzer, startHour, endHour):
     """
     Retorna los accidentes por rango de horas y su severidad
@@ -84,8 +96,15 @@ def getAccidentsByHourRange(analyzer, startHour, endHour):
     endHour=endHour+":00"
     endHour = datetime.datetime.strptime(endHour, '%H:%M:%S')
     hourentry = model.getAccidentsByHourRange(analyzer, startHour, endHour)
+    return getTotalInfo(hourentry)
+
+def getTotalInfo(lstValues):
+    """
+    Obtiene la cantidad total de accidentes y severidades
+    para una lista de valores
+    """
     num_accidents = 0
-    iterator = it.newIterator(hourentry)
+    iterator = it.newIterator(lstValues)
     sev1 = 0
     sev2 = 0
     sev3 = 0
@@ -103,6 +122,10 @@ def getAccidentsByHourRange(analyzer, startHour, endHour):
     return(num_accidents,sev1,sev2,sev3,sev4)
 
 def getSeverities(severities):
+    """
+    Obtiene la cantidad de elementos en la lista de
+    cada severidad
+    """
     sev1 = model.accidentsSize(model.getSeverity(severities,1))
     sev2 = model.accidentsSize(model.getSeverity(severities,2))
     sev3 = model.accidentsSize(model.getSeverity(severities,3))
