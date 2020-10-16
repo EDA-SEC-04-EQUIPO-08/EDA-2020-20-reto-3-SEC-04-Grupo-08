@@ -22,6 +22,7 @@
 
 import config as cf
 from App import model
+from DISClib.DataStructures import listiterator as it
 import datetime
 import csv
 
@@ -71,11 +72,52 @@ def getAccidentsByDate(analyzer, initialDate):
     dataentry = model.getAccidentsByDate(analyzer, initialDate.date())
     num_accidents = dataentry["num_accidents"]
     severities = dataentry['severityIndex']
+    sev1,sev2,sev3,sev4 = getSeverities(severities)
+    return(num_accidents,sev1,sev2,sev3,sev4)
+
+def getAccidentsByHourRange(analyzer, startHour, endHour):
+    """
+    Retorna los accidentes por rango de horas y su severidad
+    """
+    startHour=startHour+":00"
+    startHour = datetime.datetime.strptime(startHour, '%H:%M:%S')
+    endHour=endHour+":00"
+    endHour = datetime.datetime.strptime(endHour, '%H:%M:%S')
+    hourentry = model.getAccidentsByHourRange(analyzer, startHour, endHour)
+    num_accidents = 0
+    iterator = it.newIterator(hourentry)
+    sev1 = 0
+    sev2 = 0
+    sev3 = 0
+    sev4 = 0
+    while  it.hasNext(iterator):
+        element = it.next(iterator)
+        num_accidents += element["num_accidents"]
+        severities = element['severityIndex']
+        sev_1,sev_2,sev_3,sev_4 = getSeverities(severities)
+        sev1 = sev1 + sev_1
+        sev2 = sev2 + sev_2
+        sev3 = sev3 + sev_3
+        sev4 = sev4 + sev_4
+    
+    return(num_accidents,sev1,sev2,sev3,sev4)
+
+def getSeverities(severities):
     sev1 = model.accidentsSize(model.getSeverity(severities,1))
     sev2 = model.accidentsSize(model.getSeverity(severities,2))
     sev3 = model.accidentsSize(model.getSeverity(severities,3))
-    sev4 = model.accidentsSize(model.getSeverity(severities,4))  
-    return(num_accidents,sev1,sev2,sev3,sev4)
+    sev4 = model.accidentsSize(model.getSeverity(severities,4)) 
+    return (sev1,sev2,sev3,sev4)
+
+def severityPrecent (num_accidents,sev1,sev2,sev3,sev4):
+    """
+    Obtiene el porcentaje de una severidad
+    """
+    sev1 = model.severityPrecent(num_accidents, sev1)
+    sev2 = model.severityPrecent(num_accidents, sev2)
+    sev3 = model.severityPrecent(num_accidents, sev3)
+    sev4 = model.severityPrecent(num_accidents, sev4)
+    return (sev1,sev2,sev3,sev4)
 
 def totalAccidentSize(analyzer):
     """

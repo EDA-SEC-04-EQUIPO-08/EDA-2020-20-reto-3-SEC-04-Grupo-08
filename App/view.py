@@ -37,6 +37,7 @@ operación seleccionada.
 #  Ruta a los archivos
 # ___________________________________________________
 
+accidents_megasmall = 'us_accidents_small - copia.csv'
 accidents_small = 'us_accidents_small.csv'
 accidents_2016 = 'us_accidents_dis_2016.csv'
 
@@ -50,7 +51,12 @@ def printMenu():
     print("Bienvenido")
     print("1- Inicializar Analizador")
     print("2- Cargar información de accidentes")
-    print("3-  Conocer los accidentes en una fecha")
+    print("3- Conocer los accidentes en una fecha")
+    print("4- Conocer los accidentes anteriores a una fecha")
+    print("5- Conocer los accidentes en un rango de fechas")
+    print("6- Conocer el estado con mas accidentes ")
+    print("7- Conocer los accidentes por rango de horas")
+    print("8- Conocer la zona geográfica mas accidentada")
     print("0- Salir")
     print("*******************************************")
 
@@ -70,18 +76,44 @@ while True:
     elif int(inputs[0]) == 2:
         print("\nCargando información de accidentes ....")
         controller.loadData(cont, accidents_small)
+        alt1,alt2 = controller.indexHeight(cont)
+        size1,size2 = controller.indexSize(cont)
+        min1,min2 = controller.minKey(cont)
+        max1,max2 = controller.maxKey(cont)
         print('Accidentes cargados: ' + str(controller.totalAccidentSize(cont)))
-        print('Altura del arbol: ' + str(controller.indexHeight(cont)))
-        print('Cantidad de fechas: ' + str(controller.indexSize(cont)))
-        print('Primera fecha registrada: ' + str(controller.minKey(cont)))
-        print('Ultima fecha registrada: ' + str(controller.maxKey(cont)))
+        print('Altura del arbol 1: ' + str(alt1))
+        print('Cantidad de fechas: ' + str(size1))
+        print('Primera fecha registrada: ' + str(min1))
+        print('Ultima fecha registrada: ' + str(max1))
+        print('Altura del arbol 2: ' + str(alt2))
+        print('Cantidad de horas: ' + str(size2))
+        print('Primera hora registrada: ' + str(min2))
+        print('Ultima hora registrada: ' + str(max2))
 
     elif int(inputs[0]) == 3:
         print("\nBuscando accidentes en una fecha: ")
         initialDate = input("Fecha (YYYY-MM-DD): ")
-        num_accidents,sev1,sev2,sev3,sev4 = controller.getAccidentsByDate(cont, initialDate)
-        print("\nEl total de accidentes en la fecha " + initialDate + " son:  " + str(num_accidents))
-        print("\nHubo " + str(sev1) + " accidentes con severidad 1,  "+ str(sev2) + " con severidad 2,  "+ str(sev3) + " con severidad 3 y  "+ str(sev4) + " con severidad 4." )
+        try:
+            num_accidents,sev1,sev2,sev3,sev4 = controller.getAccidentsByDate(cont, initialDate)
+            print("\nEl total de accidentes en la fecha " + initialDate + " son:  " + str(num_accidents))
+            print("\nHubo " + str(sev1) + " accidentes con severidad 1,  "+ str(sev2) + " con severidad 2,  "+ str(sev3) + " con severidad 3 y  "+ str(sev4) + " con severidad 4." )
+        except:
+            print("Hubo un error al buscar la fecha ingresada")
+    
+    elif int(inputs[0]) == 7:
+        print("\nBuscando accidentes por rango de horas: ")
+        print("\nIngresar las horas del rango en formato 24 horas (00:00 - 23:59)")
+        startHour = input("Hora inicial: ")
+        endHour = input("Hora final: ")
+        try: 
+            num_accidents,sev1,sev2,sev3,sev4 = controller.getAccidentsByHourRange(cont, startHour, endHour)
+            per_1,per_2,per_3,per_4= controller.severityPrecent(num_accidents,sev1,sev2,sev3,sev4)
+            print("\nEl total de accidentes entre " + startHour + " y " + endHour + " son:  " + str(num_accidents))
+            print("\nHubo " + str(sev1) + " accidentes con severidad 1,  "+ str(sev2) + " con severidad 2,  "+ str(sev3) + " con severidad 3 y  "+ str(sev4) + " con severidad 4." )
+            print("\nY sus porcentajes son " + str(per_1) + ",  "+ str(per_2) + ",  "+ str(per_3) + " y  "+ str(per_4) + " respectivamente." )
+        except:
+            print("Hubo un error al buscar el rango de horas ingresado")
+
 
     else:
         sys.exit(0)
