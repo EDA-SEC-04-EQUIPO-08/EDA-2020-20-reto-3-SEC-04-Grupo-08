@@ -133,6 +133,14 @@ def getAccidentsByDate(analyzer, initialDate):
     accidentdate = om.get(analyzer['dateIndex'], initialDate)    
     return me.getValue(accidentdate)
 
+def getAccidentsByDateRange(analyzer, initialDate, finalDate):
+    """
+    Para una un rango de fechas determinado, retorna el numero
+    de accidentes por severidad .
+    """
+    accidentdate = om.values(analyzer['dateIndex'], initialDate, finalDate)    
+    return accidentdate
+
 def getAccidentsByHourRange(analyzer, startHour, endHour):
     """
     Para una fecha determinada, retorna el numero de accidentes
