@@ -40,6 +40,7 @@ operación seleccionada.
 accidents_megasmall = 'Copia_us_accidents_small.csv'
 accidents_small = 'us_accidents_small.csv'
 accidents_2016 = 'us_accidents_dis_2016.csv'
+accidents_big= 'US_Accidents_Dec19.csv'
 
 # ___________________________________________________
 #  Menu principal
