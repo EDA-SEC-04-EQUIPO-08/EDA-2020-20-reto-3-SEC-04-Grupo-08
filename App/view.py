@@ -103,9 +103,12 @@ while True:
     elif int(inputs[0])==4:
         print("\nBuscando accidentes anteriores a una fecha: ")
         initialDate = input("Fecha (YYYY-MM-DD): ")
-        num_accidents,fecha = controller.getAccidentsBeforeDate(cont,initialDate)
-        print("\nEl total de accidentes antes de "+initialDate+" son:  "+ str(num_accidents))
-        print("\nLa fecha con más accidentes es:"+str(fecha))
+        try:
+            num_accidents,fecha = controller.getAccidentsBeforeDate(cont,initialDate)
+            print("\nEl total de accidentes antes de "+initialDate+" son:  "+ str(num_accidents))
+            print("\nLa fecha con más accidentes es:"+str(fecha))
+        except:
+            print("Hubo un error al buscar los accidentes")
     
 
     elif int(inputs[0]) == 5:
