@@ -75,6 +75,16 @@ def getAccidentsByDate(analyzer, initialDate):
     sev1,sev2,sev3,sev4 = getSeverities(severities)
     return(num_accidents,sev1,sev2,sev3,sev4)
 
+def getAccidentsBeforeDate (analyzer, finalDate):
+    """
+    Retorna los accidentes anteriores a una fecha y la fecha con más accidentes
+    """
+    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
+    dataentry,keys = model.getAccidentsBeforeDate(analyzer,finalDate.date())
+    num_accidents,fecha = getInfo(dataentry,keys)
+    return (num_accidents,fecha)
+
+
 def getAccidentsByDateRange(analyzer, initialDate, finalDate):
     """
     Retorna los accidentes por fecha y su severidad
@@ -132,6 +142,7 @@ def getTotalInfo(lstValues):
     
     return(num_accidents,sev1,sev2,sev3,sev4)
 
+
 def getDate(lstValues):
     maxi=0
     date=''
@@ -165,6 +176,24 @@ def severityPrecent (num_accidents,sev1,sev2,sev3,sev4):
     sev3 = model.severityPrecent(num_accidents, sev3)
     sev4 = model.severityPrecent(num_accidents, sev4)
     return (sev1,sev2,sev3,sev4)
+  
+def getInfo (lstValues1,lstValues2):
+    """
+    Obtiene la cantidad total de accidentes 
+    """
+    num_accidents = 0
+    mayor = 0
+    iterator1 = it.newIterator(lstValues1)
+    iterator2 = it.newIterator(lstValues2)
+    while  it.hasNext(iterator1):
+        element1 = it.next(iterator1)
+        element2 = it.next(iterator2)
+        num_accidents += element1["num_accidents"]
+        if element1["num_accidents"]>mayor:
+            mayor=element1["num_accidents"]
+            fecha=element2
+    
+    return (num_accidents,fecha)
 
 def totalAccidentSize(analyzer):
     """
