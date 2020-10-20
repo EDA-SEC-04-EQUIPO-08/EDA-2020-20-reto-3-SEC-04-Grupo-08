@@ -37,7 +37,7 @@ operación seleccionada.
 #  Ruta a los archivos
 # ___________________________________________________
 
-accidents_megasmall = 'us_accidents_small - copia.csv'
+accidents_megasmall = 'Copia_us_accidents_small.csv'
 accidents_small = 'us_accidents_small.csv'
 accidents_2016 = 'us_accidents_dis_2016.csv'
 
@@ -99,7 +99,6 @@ while True:
             print("\nHubo " + str(sev1) + " accidentes con severidad 1,  "+ str(sev2) + " con severidad 2,  "+ str(sev3) + " con severidad 3 y  "+ str(sev4) + " con severidad 4." )
         except:
             print("Hubo un error al buscar la fecha ingresada")
-
     elif int(inputs[0]) == 5:
         print("\nBuscando los accidentes en un rango de fechas: ")
         print("\nIngresar las fechas del rango en formato YYYY-MM-DD")
@@ -112,7 +111,19 @@ while True:
             print("\nLa severidad más reportada fue la "+ sev + ", esta fue reportada un total de "+ str(num_sev) + " en el rango de fechas" )
         except:
             print("Hubo un error al buscar el rango de fechas ingresado")
-    
+
+    elif int(inputs[0]) == 6:
+        print("\nBuscando el estado con más accidentes en un rango de fechas: ")
+        print("\nIngresar las fechas del rango en formato YYYY-MM-DD")
+        initialDate = input("Fecha inicial: ")
+        finalDate = input("Fecha final: ")
+        try:
+            date,state,num_state = controller.getStateByDateRange(cont, initialDate, finalDate)
+            print("\nEl estado con más accidentes entre " + initialDate + " y " + finalDate + " fue "+ str(state) + ", con un total de "+ str(num_state) + " accidentes." )
+            print("\nLa fecha con más accidentes en el rango de fechas es:  " + str(date)+ " , con un total de "+ str(num_state) + " accidentes." )
+        except:
+            print("Hubo un error al buscar el rango de fechas ingresado")
+        
     elif int(inputs[0]) == 7:
         print("\nBuscando accidentes por rango de horas: ")
         print("\nIngresar las horas del rango en formato 24 horas (00:00 - 23:59)")
