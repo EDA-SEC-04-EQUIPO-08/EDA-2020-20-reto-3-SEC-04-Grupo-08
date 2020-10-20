@@ -133,6 +133,13 @@ def getAccidentsByDate(analyzer, initialDate):
     accidentdate = om.get(analyzer['dateIndex'], initialDate)    
     return me.getValue(accidentdate)
 
+def getAccidentsBeforeDate(analyzer,finalDate):
+    """Retorna los accidentes anteriores a una fecha"""
+    initialDate = datetime.datetime.strptime("0001-01-01",'%Y-%m-%d')
+    accidentdate = om.values(analyzer['dateIndex'], initialDate.date(), finalDate)
+    dates = om.keys(analyzer['dateIndex'], initialDate.date(), finalDate)
+    return (accidentdate,dates)
+
 def getAccidentsByDateRange(analyzer, initialDate, finalDate):
     """
     Para una un rango de fechas determinado, retorna el numero
@@ -157,6 +164,7 @@ def getAccidentsByHourRange(analyzer, startHour, endHour):
 
 def getSeverity(lst,severity):
     return lt.getElement(lst,severity)['lstseverities']
+
 
 def severityPrecent (num_accidents, sev_num):
     """
