@@ -25,13 +25,16 @@ def newAnalyzer():
     """
     analyzer = {'accidents': None,
                 'dateIndex': None,
-                "hours":None
+                "hours":None,
+                "states":None
                 }
 
     analyzer['accidents'] = lt.newList('SINGLE_LINKED', compare)
     analyzer['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compare)
     analyzer["hours"] = om.newMap(omaptype='RBT',
+                                      comparefunction=compare)
+    analyzer["states"] = om.newMap(omaptype='RBT',
                                       comparefunction=compare)
     #EN CASO DE QUE SEA EN GENERAL
     return analyzer
@@ -44,6 +47,7 @@ def addAccident(analyzer, accident):
     lt.addLast(analyzer['accidents'], accident)
     updateDateIndex(analyzer['dateIndex'], accident)
     updateHourIndex(analyzer["hours"], accident)
+    updateState(analyzer["states"],accident)
     return analyzer
 
 def updateDateIndex(map, accident):
@@ -86,6 +90,25 @@ def updateHourIndex(map, accident):
     addDateIndex(hourentry, accident)
     return map
 
+def updateState(map, accident):
+    """
+    Se toma la fecha del accidente y se busca si ya existe en el arbol
+    dicha fecha.  Si es asi, se adiciona a su lista de accidentes
+    y se actualiza el indice de tipos de accidentes.
+    Si no se encuentra creado un nodo para esa fecha en el arbol
+    se crea y se actualiza el indice de tipos de accidentes
+    """
+    occurreddate = accident['Start_Time']
+    accidentdate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
+    entry = om.get(map, accidentdate.date())
+    if entry is None:
+        datentry = newState()
+        om.put(map, accidentdate.date(), datentry)
+    else:
+        datentry = me.getValue(entry)
+    addState(datentry, accident)
+    return map
+
 def addDateIndex(datentry, accident):
     """
     Actualiza un indice de tipo de accidentes.  Este indice tiene una lista
@@ -98,6 +121,22 @@ def addDateIndex(datentry, accident):
     accidntentry = lt.getElement(severityIndex, int(accident['Severity']))
     entry = accidntentry
     lt.addLast(entry['lstseverities'], accident)
+    return datentry
+
+def addState(datentry, accident):
+    """
+    Actualiza un indice de tipo de accidentes.  Este indice tiene una lista
+    de accidentes y un arreglo donde su posicion es el numero de severidad y
+    el valor es una lista con los accidentes de dicho tipo en la fecha que
+    se está consultando (dada por el nodo del arbol)
+    """
+    datentry['num_accidents'] += 1
+    date=accident["Start_Time"].split()
+    datentry["date"]=date[0]
+    elements=datentry['lststate']
+    entry = lt.isPresent(elements, accident['State'])
+    if entry==0:
+        lt.addLast(elements, accident['State'])
     return datentry
 
 def newDataEntry():
@@ -122,6 +161,15 @@ def newSeverityEntry(severityNum):
     seventry['lstseverities'] = lt.newList('SINGLELINKED', compare)
     return seventry
 
+def newState():
+    """
+    Crea una entrada en el indice por numero de severidad del accidente, es decir en
+    la tabla de hash, que se encuentra en cada nodo del arbol.
+    """
+    entry = {'lststate': None, "num_accidents":0, "date":""}
+    entry['lststate'] = lt.newList("ARRAY_LIST", compare)
+    return entry
+
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -145,7 +193,15 @@ def getAccidentsByDateRange(analyzer, initialDate, finalDate):
     Para una un rango de fechas determinado, retorna el numero
     de accidentes por severidad .
     """
-    accidentdate = om.values(analyzer['dateIndex'], initialDate, finalDate)    
+    accidentdate = om.values(analyzer['dateIndex'], initialDate, finalDate)
+    return accidentdate
+
+def getStateByDateRange(analyzer, initialDate, finalDate):
+    """
+    Para una un rango de fechas determinado, retorna el numero
+    de accidentes por severidad .
+    """
+    accidentdate = om.values(analyzer['states'], initialDate, finalDate)
     return accidentdate
 
 def getAccidentsByHourRange(analyzer, startHour, endHour):
