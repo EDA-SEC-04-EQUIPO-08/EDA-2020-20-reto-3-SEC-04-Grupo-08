@@ -134,7 +134,7 @@ while True:
         try:
             date,state,num_state = controller.getStateByDateRange(cont, initialDate, finalDate)
             print("\nEl estado con más accidentes entre " + initialDate + " y " + finalDate + " fue "+ str(state) + ", con un total de "+ str(num_state) + " accidentes." )
-            print("\nLa fecha con más accidentes en el rango de fechas es:  " + str(date)+ " , con un total de "+ str(num_state) + " accidentes." )
+            print("\nLa fecha con más accidentes en el rango de fechas es:  " + str(date)+ "." )
         except:
             print("Hubo un error al buscar el rango de fechas ingresado")
         
