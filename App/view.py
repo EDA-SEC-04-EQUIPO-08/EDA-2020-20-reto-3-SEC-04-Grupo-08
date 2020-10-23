@@ -40,6 +40,7 @@ operación seleccionada.
 accidents_megasmall = 'us_accidents_small - copia.csv'
 accidents_small = 'us_accidents_small.csv'
 accidents_2016 = 'us_accidents_dis_2016.csv'
+accidents_big = "US_Accidents_Dec19.csv"
 
 # ___________________________________________________
 #  Menu principal
@@ -75,7 +76,7 @@ while True:
 
     elif int(inputs[0]) == 2:
         print("\nCargando información de accidentes ....")
-        controller.loadData(cont, accidents_small)
+        controller.loadData(cont, accidents_big)
         alt1,alt2 = controller.indexHeight(cont)
         size1,size2 = controller.indexSize(cont)
         min1,min2 = controller.minKey(cont)
@@ -137,6 +138,13 @@ while True:
             print("\nY sus porcentajes son " + str(per_1) + ",  "+ str(per_2) + ",  "+ str(per_3) + " y  "+ str(per_4) + " respectivamente." )
         except:
             print("Hubo un error al buscar el rango de horas ingresado")
+    elif int(inputs[0]) == 8:
+        print ("\nBuscando accidentes por radio de distancia: ")
+        latitud =float(input ("Ingrese una latitud: "))
+        longitud = float(input ("Ingrese una longitud: "))
+        distancia = float(input ("Ingrese una distancia: "))
+        semana = controller.getAccidentsByLat(cont,latitud, longitud, distancia)
+        print ("\nLa cantidad de accidentes en esta área fueron cada día fueron: \nLunes: "+str(semana[0])+"\nMartes: "+str(semana[1])+"\nMiercoles: "+str(semana[2])+"\nJueves: "+str(semana[3])+"\nViernes: "+str(semana[4])+"\nSabado: "+str(semana[5])+"\nDomingo: "+str(semana[6]))
     else:
         sys.exit(0)
 sys.exit(0)

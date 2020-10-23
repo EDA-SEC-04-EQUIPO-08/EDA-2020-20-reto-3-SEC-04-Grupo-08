@@ -108,6 +108,16 @@ def getAccidentsByHourRange(analyzer, startHour, endHour):
     hourentry = model.getAccidentsByHourRange(analyzer, startHour, endHour)
     return getTotalInfo(hourentry)
 
+def getAccidentsByLat(analyzer, lat, lon, distance):
+    """
+    Retorna los accidentes dentro de un radio en un punto específico por días
+    """
+    dataentry=model.getAccidentsByLat(analyzer, lat, lon, distance)
+    dias=getLatInfo(dataentry)
+    return dias
+
+
+
 def getTotalInfo(lstValues):
     """
     Obtiene la cantidad total de accidentes y severidades
@@ -148,6 +158,27 @@ def getInfo (lstValues1,lstValues2):
             fecha=element2
     
     return (num_accidents,fecha)
+
+def getLatInfo(lstValues):
+    """
+    Obtiene la cantidad total de accidentes 
+    """
+    iterator=it.newIterator(lstValues)
+    semana = [0,0,0,0,0,0,0]
+    while it.hasNext(iterator):
+        element1=it.next(iterator)
+        iteratora=it.newIterator(element1)
+        while it.hasNext(iteratora):
+            contador=0
+            element = it.next(iteratora)
+            iterator1 = it.newIterator(element["weekday"])
+            while it.hasNext(iterator1):
+                element1 = it.next(iterator1)
+                if element1>0:
+                    semana[contador]+=element["num_accidents"]
+                contador+=1
+    return semana
+    
 
 def getSeverities(severities):
     """

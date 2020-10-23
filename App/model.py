@@ -5,6 +5,8 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import map as m
 import datetime
 assert config
+import math
+from DISClib.DataStructures import listiterator as it
 
 """
 En este archivo definimos los TADs que vamos a usar,
@@ -25,7 +27,9 @@ def newAnalyzer():
     """
     analyzer = {'accidents': None,
                 'dateIndex': None,
-                "hours":None
+                "hours":None,
+                "states":None,
+                "latitud":None
                 }
 
     analyzer['accidents'] = lt.newList('SINGLE_LINKED', compare)
@@ -33,6 +37,9 @@ def newAnalyzer():
                                       comparefunction=compare)
     analyzer["hours"] = om.newMap(omaptype='RBT',
                                       comparefunction=compare)
+    analyzer["latitud"] = om.newMap(omaptype='RBT',
+                                      comparefunction=compare)
+
     #EN CASO DE QUE SEA EN GENERAL
     return analyzer
 
@@ -44,6 +51,7 @@ def addAccident(analyzer, accident):
     lt.addLast(analyzer['accidents'], accident)
     updateDateIndex(analyzer['dateIndex'], accident)
     updateHourIndex(analyzer["hours"], accident)
+    updateLatIndex(analyzer["latitud"], accident)
     return analyzer
 
 def updateDateIndex(map, accident):
@@ -122,6 +130,68 @@ def newSeverityEntry(severityNum):
     seventry['lstseverities'] = lt.newList('SINGLELINKED', compare)
     return seventry
 
+def updateLatIndex(map, accident):
+    """
+    Se toma la latitud y se busca en el arbol
+    si no esta se crea una nueva entrada
+    """
+    occurrelat = float(accident['Start_Lat'])
+    entry = om.get(map, occurrelat)
+    if entry is None:
+        latentry = newLatEntry()
+        om.put(map, occurrelat, latentry)
+    else:
+        latentry = me.getValue(entry)
+    addLatLon(latentry, accident)
+    return map
+def addLatLon(map, accident):
+    """
+    Actualiza un indice de tipo de accidentes.  Este indice tiene una lista
+    de accidentes y un arreglo donde su posicion es el numero de severidad y
+    el valor es una lista con los accidentes de dicho tipo en la fecha que
+    se está consultando (dada por el nodo del arbol)
+    """
+    occurreddate = accident['Start_Time']
+    accidentdate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
+    date = accidentdate.date()
+    weekDay = date.isoweekday() #El dia de la semana en numero
+    lon = float(accident['Start_Lng'])
+    entry = om.get(map, lon)
+    if entry is None:
+        lonentry = newLonEntry()
+        om.put(map, lon, lonentry)
+    else:
+        lonentry = me.getValue(entry)
+    addLon(lonentry, accident,weekDay)
+    return (map) 
+def addLon(lonentry,accident,weekDay):
+    """
+    Actualiza la longitud.
+    """
+    lonentry['num_accidents'] += 1
+    lstweekdays = lonentry["weekday"]
+    total = lt.getElement(lstweekdays,weekDay)+1
+    lt.changeInfo(lstweekdays,weekDay,total)
+    return lonentry
+def newLatEntry():
+    """
+    Crea una entrada en el indice por fechas, es decir en el arbol
+    binario.
+    """
+    latitud = om.newMap(omaptype='RBT',comparefunction=compare)
+    return latitud
+def newLonEntry():
+    """
+    Crea una entrada en el indice por Longitud, crea una lista
+    donode la posicion 1 es lunes, la dos es Martes, y así hasta llegar
+    a la posicion 7 que es el domingo.
+    """
+    entry = {'weekday': None, "num_accidents":0}
+    entry['weekday'] = lt.newList("ARRAY_LIST", compare)
+    for i in range (0,7):
+        lt.addLast(entry['weekday'],0)
+    return entry
+
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -161,6 +231,25 @@ def getAccidentsByHourRange(analyzer, startHour, endHour):
         maxKey = om.maxKey(analyzer["hours"])
         accidentdate = om.values(analyzer["hours"], startHour, maxKey)
     return accidentdate
+
+def getAccidentsByLat(analyzer, lat, lon, dis):
+    """
+    Para una fecha determinada, retorna el numero de accidentes
+    por severidad .
+    """
+    maxLat,q = lat_lon(0,dis,lat,lon)
+    m,maxLon = lat_lon(90,dis,lat,lon)
+    minLat,p = lat_lon(180,dis,lat,lon)
+    j,minLon = lat_lon(270,dis,lat,lon)
+    accidents = lt.newList()
+    inLat = om.values(analyzer["latitud"],minLat,maxLat)
+    iterator = it.newIterator(inLat)
+    while it.hasNext(iterator):
+        element = it.next(iterator)
+        inLon = om.values(element,minLon,maxLon)
+        lt.addLast(accidents,inLon)
+    return accidents
+ 
 
 def getSeverity(lst,severity):
     return lt.getElement(lst,severity)['lstseverities']
@@ -249,3 +338,33 @@ def roundedTime (accidentdate):
     new = accidentdate.replace(hour=hour, minute=minute, second=00)
     new = new.time()
     return new
+
+def distance(lat1, lat2, lon1, lon2): 
+    lon1 = math.radians(lon1) 
+    lon2 = math.radians(lon2) 
+    lat1 = math.radians(lat1) 
+    lat2 = math.radians(lat2) 
+    dlon = lon2 - lon1  
+    dlat = lat2 - lat1 
+    a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+    c = 2 * math.asin(math.sqrt(a))  
+    r = 6371
+    return(c * r)  
+
+
+def lat_lon(brng,d,lat,lon):
+    """
+    Dado un angulo brng, una distancia y una lat y lon
+    da las cordenadas en las que quedaria esa distancia
+    desde el lat y lon dados en la direccion dada.
+    """
+    brng = math.radians(brng)
+    lat1 = math.radians(lat) #Current lat point converted to radians
+    lon1 = math.radians(lon) #Current long point converted to radians
+    R = 6378.1 #Radius of the Earth
+    lat2 = math.asin( math.sin(lat1)*math.cos(d/R) +math.cos(lat1)*math.sin(d/R)*math.cos(brng))
+    lon2 = lon1 + math.atan2(math.sin(brng)*math.sin(d/R)*math.cos(lat1),
+            math.cos(d/R)-math.sin(lat1)*math.sin(lat2))
+    lat2 = math.degrees(lat2)
+    lon2 = math.degrees(lon2)
+    return (lat2,lon2)
