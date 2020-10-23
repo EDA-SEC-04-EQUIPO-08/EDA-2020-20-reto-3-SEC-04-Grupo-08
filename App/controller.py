@@ -97,6 +97,17 @@ def getAccidentsByDateRange(analyzer, initialDate, finalDate):
     mayor = (max((sev1,"severidad 1"),(sev2,"severidad 2"),(sev3,"severidad 3"),(sev4,"severidad 4")))
     return(num_accidents,mayor)
 
+def getStateByDateRange(analyzer, initialDate, finalDate):
+    """
+    Retorna los accidentes por fecha y su severidad
+    más reportada
+    """
+    initialDate = datetime.datetime.strptime(initialDate, '%Y-%m-%d')
+    finalDate = datetime.datetime.strptime(finalDate, '%Y-%m-%d')
+    accidentdate= model.getStateByDateRange(analyzer, initialDate.date(), finalDate.date())
+    state,date,num=getDate(accidentdate)
+    return(state,date,num)
+
 def getAccidentsByHourRange(analyzer, startHour, endHour):
     """
     Retorna los accidentes por rango de horas y su severidad
@@ -141,23 +152,19 @@ def getTotalInfo(lstValues):
     
     return(num_accidents,sev1,sev2,sev3,sev4)
 
-def getInfo (lstValues1,lstValues2):
-    """
-    Obtiene la cantidad total de accidentes 
-    """
-    num_accidents = 0
-    mayor = 0
-    iterator1 = it.newIterator(lstValues1)
-    iterator2 = it.newIterator(lstValues2)
-    while  it.hasNext(iterator1):
-        element1 = it.next(iterator1)
-        element2 = it.next(iterator2)
-        num_accidents += element1["num_accidents"]
-        if element1["num_accidents"]>mayor:
-            mayor=element1["num_accidents"]
-            fecha=element2
-    
-    return (num_accidents,fecha)
+
+def getDate(lstValues):
+    maxi=0
+    date=''
+    state=''
+    iterator = it.newIterator(lstValues)
+    while  it.hasNext(iterator):
+        element = it.next(iterator)
+        if element["num_accidents"] > maxi:
+            maxi= element["num_accidents"]
+            date=element["date"]
+            state=element["lststate"]["elements"][0]
+    return (date,state,maxi)
 
 def getLatInfo(lstValues):
     """
@@ -200,6 +207,24 @@ def severityPrecent (num_accidents,sev1,sev2,sev3,sev4):
     sev3 = model.severityPrecent(num_accidents, sev3)
     sev4 = model.severityPrecent(num_accidents, sev4)
     return (sev1,sev2,sev3,sev4)
+  
+def getInfo (lstValues1,lstValues2):
+    """
+    Obtiene la cantidad total de accidentes 
+    """
+    num_accidents = 0
+    mayor = 0
+    iterator1 = it.newIterator(lstValues1)
+    iterator2 = it.newIterator(lstValues2)
+    while  it.hasNext(iterator1):
+        element1 = it.next(iterator1)
+        element2 = it.next(iterator2)
+        num_accidents += element1["num_accidents"]
+        if element1["num_accidents"]>mayor:
+            mayor=element1["num_accidents"]
+            fecha=element2
+    
+    return (num_accidents,fecha)
 
 def totalAccidentSize(analyzer):
     """
