@@ -157,7 +157,8 @@ while True:
         longitud = float(input ("Ingrese una longitud: "))
         distancia = float(input ("Ingrese una distancia: "))
         try:
-            semana = controller.getAccidentsByLat(cont,latitud, longitud, distancia)
+            semana,total = controller.getAccidentsByLat(cont,latitud, longitud, distancia)
+            print("\nEl total de accidentes fue " + str(total))
             print ("\nLa cantidad de accidentes en esta área fueron cada día fueron: \nLunes: "+str(semana[0])+"\nMartes: "+str(semana[1])+"\nMiercoles: "+str(semana[2])+"\nJueves: "+str(semana[3])+"\nViernes: "+str(semana[4])+"\nSabado: "+str(semana[5])+"\nDomingo: "+str(semana[6]))
         except:
             print("Hubo un error al buscar el rango de horas ingresado")
