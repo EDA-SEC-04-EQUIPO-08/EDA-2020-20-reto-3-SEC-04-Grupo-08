@@ -124,8 +124,8 @@ def getAccidentsByLat(analyzer, lat, lon, distance):
     Retorna los accidentes dentro de un radio en un punto específico por días
     """
     dataentry=model.getAccidentsByLat(analyzer, lat, lon, distance)
-    dias=getLatInfo(dataentry)
-    return dias
+    dias,total=getLatInfo(dataentry)
+    return (dias,total)
 
 
 
@@ -172,6 +172,7 @@ def getLatInfo(lstValues):
     """
     iterator=it.newIterator(lstValues)
     semana = [0,0,0,0,0,0,0]
+    total = 0
     while it.hasNext(iterator):
         element1=it.next(iterator)
         iteratora=it.newIterator(element1)
@@ -184,7 +185,8 @@ def getLatInfo(lstValues):
                 if element1>0:
                     semana[contador]+=element["num_accidents"]
                 contador+=1
-    return semana
+                total += 1
+    return (semana,total)
     
 
 def getSeverities(severities):
