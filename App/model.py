@@ -28,7 +28,7 @@ def newAnalyzer():
     analyzer = {'accidents': None,
                 'dateIndex': None,
                 "hours":None,
-                "latitud":None
+                "latitud":None,
                 "states":None
                 }
 
@@ -42,7 +42,6 @@ def newAnalyzer():
 
     analyzer["states"] = om.newMap(omaptype='RBT',
                                       comparefunction=compare)
-    #EN CASO DE QUE SEA EN GENERAL
     return analyzer
 
 # Funciones para agregar informacion al catalogo
